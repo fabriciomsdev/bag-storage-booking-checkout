@@ -32,6 +32,8 @@ export interface StorePoint {
 }
 
 export interface CheckoutState {
+  id: string;
+  userId: string;
   booking: BookOrderDTO;
   storePoint: StorePoint;
 }
