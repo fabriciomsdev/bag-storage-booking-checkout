@@ -8,6 +8,8 @@ interface CheckoutContextProps {
   removeABag: () => void;
   onChangeCustomerData: (data: Customer) => void;
   onChangePaymentData: (data: Card) => void;
+  finishCheckout: () => void;
+  wachOrder: (callback?: (data: any) => void) => void;
 }
 
 const AppConfig = {
@@ -19,16 +21,18 @@ const CheckoutContext = createContext<CheckoutContextProps | undefined>(undefine
 
 export const CheckoutProvider: React.FC = ({ children }) => {
   const [state, setState] = useState<CheckoutState>({
-    id: "1",
-    userId: "1",
     storePoint: {
-      id: "1x",
+      id: "236584ee-58e2-42fd-a4d4-e08133bbbb6b",
       name: "Cody's Cookie Store",
     },
     possibleItemsToStore: [],
+    success: false,
+    loading: false,
+    error: undefined,
     booking: {
+      id: undefined,
       items: {
-        bags: 1,
+        bags: 0,
       },
       customer: {
         name: "Cody",
@@ -46,7 +50,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
           expiration: "12/23",
         },
       },
-      totalValue: 100,
+      totalValue: 0,
     },
   });
 
@@ -55,6 +59,14 @@ export const CheckoutProvider: React.FC = ({ children }) => {
   useEffect(() => {
     loadPossibleItemsToStore();
   }, []);
+
+  useEffect(() => {
+    if (state.possibleItemsToStore.length) addABag();
+  }, [state.possibleItemsToStore]);
+
+  useEffect(() => {
+    startCheckout();
+  }, [state.storePoint?.id]);
 
   const loadPossibleItemsToStore = async () => {
     const data = await checkoutService.getPossibleItemsKindToStore();
@@ -128,6 +140,63 @@ export const CheckoutProvider: React.FC = ({ children }) => {
     }));
   };
 
+  const startCheckout = async () => {
+    const data = await checkoutService.start(state.storePoint);
+
+    setState((prevState) => ({
+      ...prevState,
+      booking: {
+        ...prevState.booking,
+        id: data.id,
+      },
+    }));
+  }
+
+  const setAsLoading = () => {
+    setState({
+      ...state,
+      loading: true,
+    });
+  }
+
+  const finishCheckout = async () => {
+    setAsLoading();
+    
+    if (state.booking.id) {
+      const data = await checkoutService.finish(state.booking.id, state);
+    }
+  }
+
+  const processOrderUpdate = (data: any) => {
+    if (data.status === "booked") {
+      setState((prevState) => ({
+        ...prevState,
+        success: true,
+        loading: false,
+      }));
+    }
+
+    if (data.status === "failed") {
+      setState((prevState) => ({
+        ...prevState,
+        success: false,
+        error: data.error,
+        loading: false,
+      }));
+    }
+  }
+  
+  // TODO: use websockets
+  const wachOrder = async (callback = processOrderUpdate) => {
+    setInterval(async () => {
+      if (state.booking.id) {
+        const data = await checkoutService.getOrder(state.booking.id);
+        callback(data);
+      }
+    }, 4000);
+  }
+
+
   return (
     <CheckoutContext.Provider
       value={{ 
@@ -135,7 +204,9 @@ export const CheckoutProvider: React.FC = ({ children }) => {
         addABag, 
         removeABag, 
         onChangeCustomerData, 
-        onChangePaymentData 
+        onChangePaymentData,
+        finishCheckout,
+        wachOrder
       }}
     >
       {children}

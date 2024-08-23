@@ -3,8 +3,12 @@ import { createTheme, ThemeProvider } from "@rneui/themed";
 import LuggageStoreCheckout from "./components/App";
 
 const theme = createTheme({
-  lightColors: {},
-  darkColors: {},
+  lightColors: {
+    primary: "#454bed"
+  },
+  darkColors: {
+    primary: "#454bed"
+  },
 });
 
 export default function App() {

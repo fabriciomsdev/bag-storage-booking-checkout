@@ -8,10 +8,15 @@ import { CustomerInformationForm } from "./CustomerInformationForm";
 import { CreditCardForm } from "./CreditCard";
 import { CheckoutConfirmation } from "./Confirmation";
 import { CheckoutHeader } from "./CheckoutHeader";
-
+import { useCheckout } from "../contexts/CheckoutContext";
+import { Loading } from "./Loading";
+import { OrderProcessingFeedback } from "./Error";
 
 export function Checkout() {
   const styles = useStyles();
+  const { state } = useCheckout();
+  
+  if (state.loading) return <Loading />;
 
   return (
     <View style={styles.container}>
@@ -20,6 +25,7 @@ export function Checkout() {
       <CustomerInformationForm/>
       <CheckoutDivider/>
       <CreditCardForm/>
+      <OrderProcessingFeedback />
       <CheckoutDivider/>
       <CheckoutConfirmation/>
     </View>

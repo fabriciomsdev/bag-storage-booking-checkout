@@ -10,9 +10,8 @@ export class CheckoutService {
     this.baseUrl = baseUrl;
   }
 
-  async start(store: StorePoint, userId: string) {
+  async start(store: StorePoint) {
     const payload = {
-      "user_id": userId,
       "store_id": store.id,
     };
 
@@ -21,6 +20,8 @@ export class CheckoutService {
       body: JSON.stringify(payload),
       headers: this.defaultHeaders
     });
+
+    return response.json() as Promise<{ id: string }>;
   }
 
 
@@ -83,11 +84,15 @@ export class CheckoutService {
   async finish(orderId: string, data: CheckoutState) {
     const orderDto = this._parseCheckoutToOrderDTO(data);
 
-    const response = await fetch(`${this.baseUrl}/orders`, {
-      method: 'POST',
+    const response = await fetch(`${this.baseUrl}/orders/${orderId}`, {
+      method: 'PUT',
       body: JSON.stringify(orderDto),
       headers: this.defaultHeaders
     });
+
+    return {
+      order: await response.json()
+    }
   }
 
   async getOrder(orderId: string) {

@@ -8,7 +8,7 @@ import { useCheckout } from "../contexts/CheckoutContext";
 
 
 export const CheckoutConfirmation = ({ data }: { data?: CheckoutState }) => {
-  const { state } = useCheckout();
+  const { state, finishCheckout } = useCheckout();
   data = data || state;
 
   return (
@@ -40,6 +40,7 @@ export const CheckoutConfirmation = ({ data }: { data?: CheckoutState }) => {
               borderRadius: 20,
               overflow: "hidden",
             }}
+            onPress={finishCheckout}
           >
             Book
           </Button>

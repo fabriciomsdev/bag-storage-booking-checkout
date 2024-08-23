@@ -5,6 +5,7 @@ export interface ItensClassification {
 }
 
 export interface BookOrderDTO {
+  id?: string;
   items: Items;
   customer?: Customer;
   storePoint?: StorePoint;
@@ -39,9 +40,10 @@ export interface StorePoint {
 }
 
 export interface CheckoutState {
-  id: string;
-  userId: string;
   booking: BookOrderDTO;
   storePoint: StorePoint;
+  success: boolean;
+  loading: boolean;
+  error?: string;
   possibleItemsToStore: ItensClassification[];
 }
