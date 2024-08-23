@@ -5,7 +5,7 @@ import { CustomHeading } from "./CustomHeading";
 import { useCheckout } from "../contexts/CheckoutContext";
 
 export const Loading = () => {
-  const styles = { ...useStyles()};
+  const styles = useStyles();
   const { state, wachOrder } = useCheckout();
 
   useEffect(() => {
@@ -17,11 +17,9 @@ export const Loading = () => {
       <CustomHeading style={{ color: 'white' }}>
         {state.success ?  'Booking Placed!' : 'Booking order...'}
       </CustomHeading>
-      {
-        state.loading && (
-          <LinearProgress color="white" style={styles.progress} />
-        )
-      }
+      {state.loading && !state.success && (
+        <LinearProgress color="white" style={styles.progress} />
+      )}
     </View>
   );
 };
