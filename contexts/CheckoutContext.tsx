@@ -77,6 +77,22 @@ export const CheckoutProvider: React.FC = ({ children }) => {
     }));
   };
 
+
+  const calculateNewPrice = (state: CheckoutState) => {
+    const storagePrice = getStoragePrice();
+    state.booking.totalValue = state.booking.items.bags * storagePrice;
+
+    return state;
+  }
+
+  const getStoragePrice = () => {
+    const bagStorePrice = state.possibleItemsToStore.find(
+      (item) => item.name === "Bags Storage"
+    )?.valueToStore || 10;
+
+    return bagStorePrice;
+  }
+
   const addABag = () => {
     setState((prevState) => {
       const nextState = {
@@ -90,13 +106,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
         },
       };
 
-      const bagStorePrice = prevState.possibleItemsToStore.find(
-        (item) => item.name === "Bags Storage"
-      )?.valueToStore || 10;
-
-      nextState.booking.totalValue = nextState.booking.items.bags * bagStorePrice;
-
-      return nextState;
+      return calculateNewPrice(nextState);
     });
   };
 
@@ -104,7 +114,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
     setState((prevState) => {
       if (prevState.booking.items.bags === 1) return prevState;
 
-      return {
+      const nextState = {
         ...prevState,
         booking: {
           ...prevState.booking,
@@ -114,6 +124,8 @@ export const CheckoutProvider: React.FC = ({ children }) => {
           },
         },
       };
+
+      return calculateNewPrice(nextState);
     });
   };
 
