@@ -3,11 +3,12 @@ import { View, Text } from "react-native";
 import { Container } from "./Container";
 import { Grid } from "./Grid";
 import { CheckoutState } from "../types/checkout";
-import { Button } from "@rneui/base";
 import { useCheckout } from "../contexts/CheckoutContext";
+import { makeStyles, Button } from "@rneui/themed";
 
 
 export const CheckoutConfirmation = ({ data }: { data?: CheckoutState }) => {
+  const styles = useStyles();
   const { state, finishCheckout } = useCheckout();
   data = data || state;
 
@@ -22,25 +23,15 @@ export const CheckoutConfirmation = ({ data }: { data?: CheckoutState }) => {
               </Text>
             ))}
           </Text>
-          <Text
-            style={{
-              fontWeight: "bold",
-              fontSize: 18,
-              marginVertical: 3,
-            }}
-          >
+          <Text style={styles.price}>
             $ {data.booking?.totalValue}
           </Text>
         </View>
         <View>
           <Button
-            style={{
-              width: 120,
-              height: 40,
-              borderRadius: 20,
-              overflow: "hidden",
-            }}
+            style={styles.button}
             onPress={finishCheckout}
+            color='primary'
           >
             Book
           </Button>
@@ -49,3 +40,18 @@ export const CheckoutConfirmation = ({ data }: { data?: CheckoutState }) => {
     </Container>
   );
 };
+
+
+const useStyles = makeStyles((theme) => ({
+  price: {
+    fontWeight: "bold",
+    fontSize: 18,
+    marginVertical: 3,
+  },
+  button: {
+    width: 120,
+    height: 40,
+    borderRadius: 20,
+    overflow: "hidden",
+  }
+}));

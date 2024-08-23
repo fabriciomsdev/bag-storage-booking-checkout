@@ -4,10 +4,29 @@ import LuggageStoreCheckout from "./components/App";
 
 const theme = createTheme({
   lightColors: {
-    primary: "#454bed"
+    primary: "#454bed",
+    secondary: "#454bed",
   },
   darkColors: {
-    primary: "#454bed"
+    primary: "#454bed",
+    secondary: "#454bed",
+  },
+  components: {
+    Button: {
+      buttonStyle: {
+        borderRadius: 8,
+      }
+    },
+    Input: {
+      inputStyle: {
+
+      }
+    },
+    Text: {
+      style: {
+        color: "black",
+      },
+    },
   },
 });
 
