@@ -11,7 +11,7 @@ export function CheckoutHeader() {
 
   return (
     <Container>
-      <Logo />
+      <Logo theme="dark" />
       <Text>Booking storage at:</Text>
       <CustomHeading>{state.storePoint.name}</CustomHeading>
       <BagCounter

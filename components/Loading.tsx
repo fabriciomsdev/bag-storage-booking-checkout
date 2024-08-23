@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { LinearProgress, makeStyles } from "@rneui/themed";
-import { TextStyle, View } from "react-native";
+import { Icon, LinearProgress, makeStyles } from "@rneui/themed";
+import { View } from "react-native";
 import { CustomHeading } from "./CustomHeading";
 import { useCheckout } from "../contexts/CheckoutContext";
+import { Logo } from "./Logo";
 
 export const Loading = () => {
   const styles = useStyles();
@@ -14,12 +15,15 @@ export const Loading = () => {
 
   return (
     <View style={styles.container}>
-      <CustomHeading style={{ color: 'white' }}>
-        {state.success ?  'Booking Placed!' : 'Booking order...'}
-      </CustomHeading>
       {state.loading && !state.success && (
-        <LinearProgress color="white" style={styles.progress} />
+        <>
+          <Logo theme="light" />
+          <LinearProgress color="white" style={styles.progress} />
+        </>
       )}
+      <CustomHeading style={{ color: 'white' }}>
+        {state.success ?  'Booking Placed! =)' : 'Booking order...'}
+      </CustomHeading>
     </View>
   );
 };
