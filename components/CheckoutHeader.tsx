@@ -4,12 +4,14 @@ import { useCheckout } from "../contexts/CheckoutContext";
 import { BagCounter } from "./BagCounter";
 import { Container } from "./Container";
 import { CustomHeading } from "./CustomHeading";
+import { Logo } from "./Logo";
 
 export function CheckoutHeader() {
   const { state, addABag, removeABag } = useCheckout();
 
   return (
     <Container>
+      <Logo />
       <Text>Booking storage at:</Text>
       <CustomHeading>{state.storePoint.name}</CustomHeading>
       <BagCounter
