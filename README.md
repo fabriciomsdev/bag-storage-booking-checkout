@@ -1,21 +1,24 @@
-# @rneui/template
+# Bag Storage Checkout App
 
-## React Native Elements Expo Template
+"Bag Storage Checkout App" is a simple web application that allows users to store their bags in a storage facility and retrieve them later. The application is built using React Native, Expo and Redux.
 
-### Usage
+<div style="display:flex;">
+        <img width="25%" src="./assets/filling-form.png" />
+        <img width="25%" src="./assets/failed.png" />        
+        <img width="25%" src="./assets/loading.png" />
+        <img width="25%" src="./assets/booked.png" />
+</div>
 
-#### Stable
+## How to setup:
+````bash
+  make setup
+````
 
-        expo init app --template @rneui/template
-
-#### Stable Typescript
-
-        expo init app --template @rneui/template@ts
-
-#### Bleeding Edge (Experimental)
-
-        expo init app --template @rneui/template@edge
-
-#### Bleeding Edge Typescript (Experimental)
-
-        expo init app --template @rneui/template@edge-ts
+## How to run:
+````bash
+   make run
+````
+## How to test:
+````bash
+   make test
+````
