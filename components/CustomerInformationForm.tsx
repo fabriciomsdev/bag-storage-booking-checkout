@@ -3,12 +3,17 @@ import { Input } from "@rneui/themed";
 import { CustomHeading } from "./CustomHeading";
 import { Container } from "./Container";
 import { Customer } from "../types/checkout";
+import { useCheckout } from "../contexts/CheckoutContext";
 
 
 export const CustomerInformationForm = ({
   data,
   onChange,
 }: CustomerInformationFormProps) => {
+  const { state, onChangeCustomerData } = useCheckout();
+  data = data || state.booking.customer;
+  onChange = onChange || onChangeCustomerData;
+
   return (
     <Container>
       <CustomHeading>Personal Details:</CustomHeading>
@@ -39,5 +44,5 @@ export const CustomerInformationForm = ({
 
 type CustomerInformationFormProps = {
   data?: Customer;
-  onChange: (data: Customer) => void;
+  onChange?: (data: Customer) => void;
 };

@@ -5,8 +5,13 @@ import { Grid } from "./Grid";
 import { Input } from "@rneui/base";
 import { CustomHeading } from "./CustomHeading";
 import { Card } from "../types/checkout";
+import { useCheckout } from "../contexts/CheckoutContext";
 
 export const CreditCardForm = ({ data, onChange }: CreditCardFormProps) => {
+  const { state, onChangePaymentData } = useCheckout();
+  data = data || state.booking.paymentOrder?.card;
+  onChange = onChange || onChangePaymentData;
+
   return (
     <Container>
       <CustomHeading>Payment Details:</CustomHeading>
@@ -50,4 +55,4 @@ export const CreditCardForm = ({ data, onChange }: CreditCardFormProps) => {
     </Container>
   );
 };
-type CreditCardFormProps = { data?: Card; onChange: (data: Card) => void };
+type CreditCardFormProps = { data?: Card; onChange?: (data: Card) => void };

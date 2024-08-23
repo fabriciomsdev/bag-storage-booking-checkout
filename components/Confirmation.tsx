@@ -4,9 +4,13 @@ import { Container } from "./Container";
 import { Grid } from "./Grid";
 import { CheckoutState } from "../types/checkout";
 import { Button } from "@rneui/base";
+import { useCheckout } from "../contexts/CheckoutContext";
 
 
-export const CheckoutConfirmation = ({ data }: { data: CheckoutState }) => {
+export const CheckoutConfirmation = ({ data }: { data?: CheckoutState }) => {
+  const { state } = useCheckout();
+  data = data || state;
+
   return (
     <Container>
       <Grid.Row>
