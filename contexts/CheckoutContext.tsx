@@ -11,6 +11,7 @@ interface CheckoutContextProps {
   onChangePaymentData: (data: Card) => void;
   finishCheckout: () => void;
   wachOrderUpdates: (callback?: (data: any) => void) => void;
+  restartCheckout: () => void;
 }
 
 const AppConfig = {
@@ -82,7 +83,11 @@ export const CheckoutProvider: React.FC = ({ children }) => {
     if (state.booking.id) wachOrderUpdates();
 
     return disconnectFromOrderUpdatesChannel;
-  }, [state.booking.id])
+  }, [state.booking.id]);
+
+  useEffect(() => {
+    calculateNewPrice(state);
+  }, [state.booking.items.bags]);
 
   const loadPossibleItemsToStore = async () => {
     const data = await checkoutService.getPossibleItemsKindToStore();
@@ -96,9 +101,11 @@ export const CheckoutProvider: React.FC = ({ children }) => {
 
   const calculateNewPrice = (state: CheckoutState) => {
     const storagePrice = getStoragePrice();
-    state.booking.totalValue = state.booking.items.bags * storagePrice;
+    const nextState = { ...state };
+    nextState.booking.totalValue = nextState.booking.items.bags * storagePrice;
+    setState(nextState);
 
-    return state;
+    return nextState;
   }
 
   const getStoragePrice = () => {
@@ -122,7 +129,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
         },
       };
 
-      return calculateNewPrice(nextState);
+      return nextState;
     });
   };
 
@@ -141,7 +148,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
         },
       };
 
-      return calculateNewPrice(nextState);
+      return nextState;
     });
   };
 
@@ -216,6 +223,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
   // TODO: use websockets
   const wachOrderUpdates = async (callback = processOrderUpdate) => {
     if (!state.booking.id) return;
+
     const channelName = `order:${state.booking.id}`;
     const orderUpdatesChannel = socket.channel(channelName, {});
     setChannel(orderUpdatesChannel);
@@ -223,7 +231,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
     orderUpdatesChannel
       .join()
       .receive("ok", (resp: any) => {
-        console.log("Joined successfully", resp);
+        console.log("Joined successfully to socket!", resp);
         setChannel(orderUpdatesChannel);
       })
       .receive("error", (resp: any) => {
@@ -231,7 +239,6 @@ export const CheckoutProvider: React.FC = ({ children }) => {
       });
 
     orderUpdatesChannel.on("order_update", (payload: { order: { status: string } }) => {
-      console.log("update by socket", payload);
       processOrderUpdate(payload.order);
     });
   }
@@ -239,6 +246,10 @@ export const CheckoutProvider: React.FC = ({ children }) => {
   const disconnectFromOrderUpdatesChannel = () => {
     channel?.leave();
     socket.disconnect();
+  }
+
+  const restartCheckout = () => {
+    setState(pureState());
   }
 
   return (
@@ -251,6 +262,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
         onChangePaymentData,
         finishCheckout,
         wachOrderUpdates,
+        restartCheckout
       }}
     >
       {children}
