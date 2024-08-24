@@ -7,11 +7,7 @@ import { Logo } from "./Logo";
 
 export const Loading = () => {
   const styles = useStyles();
-  const { state, wachOrder } = useCheckout();
-
-  useEffect(() => {
-    wachOrder();
-  }, []);
+  const { state } = useCheckout();
 
   return (
     <View style={styles.container}>

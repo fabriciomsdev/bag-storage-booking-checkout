@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { CheckoutState, ItensClassification, Customer, Card } from "../types/checkout";
 import { CheckoutService } from "../services/CheckoutService";
+import { Socket, Channel } from "phoenix";
 
 interface CheckoutContextProps {
   state: CheckoutState;
@@ -9,7 +10,7 @@ interface CheckoutContextProps {
   onChangeCustomerData: (data: Customer) => void;
   onChangePaymentData: (data: Card) => void;
   finishCheckout: () => void;
-  wachOrder: (callback?: (data: any) => void) => void;
+  wachOrderUpdates: (callback?: (data: any) => void) => void;
 }
 
 const AppConfig = {
@@ -18,9 +19,7 @@ const AppConfig = {
 
 const CheckoutContext = createContext<CheckoutContextProps | undefined>(undefined);
 
-
-export const CheckoutProvider: React.FC = ({ children }) => {
-  const [state, setState] = useState<CheckoutState>({
+const pureState = () => ({
     storePoint: {
       id: "236584ee-58e2-42fd-a4d4-e08133bbbb6b",
       name: "Cody's Cookie Store",
@@ -52,9 +51,20 @@ export const CheckoutProvider: React.FC = ({ children }) => {
       },
       totalValue: 0,
     },
-  });
+  } as CheckoutState)
+
+
+export const CheckoutProvider: React.FC = ({ children }) => {
+  const [channel, setChannel] = useState<Channel | null>(null);
+  const [state, setState] = useState<CheckoutState>(pureState());
 
   const checkoutService = new CheckoutService(AppConfig.apiUrl);
+  const socket = new Socket("ws://localhost:4000/socket", {
+    params: { token: "your_token" },
+  });
+
+  socket.connect();
+
 
   useEffect(() => {
     loadPossibleItemsToStore();
@@ -67,6 +77,12 @@ export const CheckoutProvider: React.FC = ({ children }) => {
   useEffect(() => {
     startCheckout();
   }, [state.storePoint?.id]);
+
+  useEffect(() => {
+    if (state.booking.id) wachOrderUpdates();
+
+    return disconnectFromOrderUpdatesChannel;
+  }, [state.booking.id])
 
   const loadPossibleItemsToStore = async () => {
     const data = await checkoutService.getPossibleItemsKindToStore();
@@ -198,15 +214,32 @@ export const CheckoutProvider: React.FC = ({ children }) => {
   }
   
   // TODO: use websockets
-  const wachOrder = async (callback = processOrderUpdate) => {
-    setInterval(async () => {
-      if (state.booking.id) {
-        const data = await checkoutService.getOrder(state.booking.id);
-        callback(data);
-      }
-    }, 4000);
+  const wachOrderUpdates = async (callback = processOrderUpdate) => {
+    if (!state.booking.id) return;
+    const channelName = `order:${state.booking.id}`;
+    const orderUpdatesChannel = socket.channel(channelName, {});
+    setChannel(orderUpdatesChannel);
+
+    orderUpdatesChannel
+      .join()
+      .receive("ok", (resp: any) => {
+        console.log("Joined successfully", resp);
+        setChannel(orderUpdatesChannel);
+      })
+      .receive("error", (resp: any) => {
+        console.log("Unable to join", resp);
+      });
+
+    orderUpdatesChannel.on("order_update", (payload: { order: { status: string } }) => {
+      console.log("update by socket", payload);
+      processOrderUpdate(payload.order);
+    });
   }
 
+  const disconnectFromOrderUpdatesChannel = () => {
+    channel?.leave();
+    socket.disconnect();
+  }
 
   return (
     <CheckoutContext.Provider
@@ -217,7 +250,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
         onChangeCustomerData, 
         onChangePaymentData,
         finishCheckout,
-        wachOrder
+        wachOrderUpdates,
       }}
     >
       {children}
