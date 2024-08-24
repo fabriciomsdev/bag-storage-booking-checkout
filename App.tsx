@@ -14,7 +14,8 @@ const theme = createTheme({
   components: {
     Button: {
       buttonStyle: {
-        borderRadius: 8,
+        borderRadius: 20,
+        overflow: "hidden",
       }
     },
     Input: {

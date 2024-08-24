@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Icon, LinearProgress, makeStyles } from "@rneui/themed";
+import { Button, Icon, LinearProgress, makeStyles } from "@rneui/themed";
 import { View } from "react-native";
 import { CustomHeading } from "./CustomHeading";
 import { useCheckout } from "../contexts/CheckoutContext";
@@ -7,7 +7,7 @@ import { Logo } from "./Logo";
 
 export const Loading = () => {
   const styles = useStyles();
-  const { state } = useCheckout();
+  const { state, restartCheckout} = useCheckout();
 
   return (
     <View style={styles.container}>
@@ -17,9 +17,23 @@ export const Loading = () => {
           <LinearProgress color="white" style={styles.progress} />
         </>
       )}
-      <CustomHeading style={{ color: 'white' }}>
-        {state.success ?  'Booking Placed! =)' : 'Booking order...'}
-      </CustomHeading>
+      {state.success ? (
+        <>
+          <CustomHeading style={{ color: 'white' }}>
+            Booking Placed!
+          </CustomHeading>
+          <Button 
+            onPress={restartCheckout} 
+            color="success"
+          >
+            Make a new booking
+          </Button>
+        </>
+      ) : (
+        <CustomHeading style={{ color: 'white' }}>
+          Booking your order...
+        </CustomHeading>
+      )}
     </View>
   );
 };
