@@ -23,7 +23,7 @@ export const CheckoutConfirmation = ({ data }: { data?: CheckoutState }) => {
               </Text>
             ))}
           </Text>
-          <Text style={styles.price}>
+          <Text style={styles.price} testID="confirmation--total-value">
             $ {data.booking?.totalValue}
           </Text>
         </View>
@@ -32,6 +32,7 @@ export const CheckoutConfirmation = ({ data }: { data?: CheckoutState }) => {
             style={styles.button}
             onPress={finishCheckout}
             color='primary'
+            testID="confirmation--book-button"
           >
             Book
           </Button>

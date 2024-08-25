@@ -26,6 +26,7 @@ export const CustomerInformationForm = ({
             name: e.nativeEvent.text,
           });
         }}
+        testID="customer-info--name-input"
       />
       <Input
         placeholder="Enter your email"
@@ -37,6 +38,7 @@ export const CustomerInformationForm = ({
           });
         }}
         textContentType="emailAddress"
+        testID="customer-info--email-input"
       />
     </Container>
   );
