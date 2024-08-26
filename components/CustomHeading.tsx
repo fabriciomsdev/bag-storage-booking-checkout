@@ -10,7 +10,7 @@ export const CustomHeading = ({ children, style : customStyle }: CustomHeadingPr
     marginBottom: 15,
     ...customStyle
   } as TextStyle;
-  console.log('style -> '+ children, customStyle);
+
   return <Text style={style}>{children}</Text>;
 };
 
