@@ -3,6 +3,7 @@ import { CheckoutState, Customer, Card } from "../types/checkout";
 import { CheckoutService } from "../services/CheckoutService";
 import { Socket, Channel } from "phoenix";
 import { validateCheckout } from "./validation";
+import { AppConfig } from "../AppConfig";
 
 interface CheckoutContextProps {
   state: CheckoutState;
@@ -15,13 +16,9 @@ interface CheckoutContextProps {
   restartCheckout: () => void;
 }
 
-const AppConfig = {
-    apiUrl: "http://localhost:4000/api",
-};
-
 const CheckoutContext = createContext<CheckoutContextProps | undefined>(undefined);
 
-const pureState = () => ({
+const getPureState = () => ({
     storePoint: {
       id: "236584ee-58e2-42fd-a4d4-e08133bbbb6b",
       name: "Cody's Cookie Store",
@@ -54,14 +51,15 @@ const pureState = () => ({
       },
       totalValue: 0,
     },
-  } as CheckoutState);
+  } as CheckoutState
+);
 
 export const CheckoutProvider: React.FC = ({ children }) => {
   const [channel, setChannel] = useState<Channel | null>(null);
-  const [state, setState] = useState<CheckoutState>(pureState());
+  const [state, setState] = useState<CheckoutState>(getPureState());
 
   const checkoutService = new CheckoutService(AppConfig.apiUrl);
-  const socket = new Socket("ws://localhost:4000/socket", {
+  const socket = new Socket(AppConfig.webSocketUrl, {
     params: { token: "your_token" },
   });
 
@@ -263,7 +261,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
   }
 
   const restartCheckout = () => {
-    setState(pureState());
+    setState(getPureState());
   }
 
   return (
