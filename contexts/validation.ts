@@ -31,13 +31,13 @@ export const bookingValidation = Yup.object().shape({
   }),
 });
 
-
 export const validateCheckout = async (data: CheckoutState) => {
   try {
-    await bookingValidation.validate(data, { abortEarly: false });
-    return { isValid: true, error: "" };
+    await bookingValidation.validate(data.booking, { abortEarly: false });
+    return { isValid: true };
   } catch (error) {
     if (error instanceof Yup.ValidationError) {
+      console.log(error.inner);
       return {
         isValid: false,
         error: error.inner.reduce(
@@ -49,4 +49,4 @@ export const validateCheckout = async (data: CheckoutState) => {
 
     return { isValid: false, error: "An error occurred" };
   }
-}
+};
