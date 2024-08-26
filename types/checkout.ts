@@ -44,6 +44,7 @@ export interface CheckoutState {
   storePoint: StorePoint;
   success: boolean;
   loading: boolean;
+  isValid: boolean;
   error?: string;
   possibleItemsToStore: ItensClassification[];
 }

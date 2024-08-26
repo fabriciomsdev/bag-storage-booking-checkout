@@ -26,6 +26,7 @@ export const CreditCardForm = ({ data, onChange }: CreditCardFormProps) => {
           });
         }}
         testID="credit-card--number-input"
+        textContentType="creditCardNumber"
       />
       <Grid.Row>
         <View style={{ width: "40%" }}>
@@ -39,6 +40,7 @@ export const CreditCardForm = ({ data, onChange }: CreditCardFormProps) => {
               });
             }}
             testID="credit-card--cvv-input"
+            textContentType="creditCardSecurityCode"
           />
         </View>
         <View style={{ width: "60%" }}>
@@ -52,6 +54,7 @@ export const CreditCardForm = ({ data, onChange }: CreditCardFormProps) => {
               });
             }}
             testID="credit-card--expiration-input"
+            textContentType="creditCardExpiration"
           />
         </View>
       </Grid.Row>

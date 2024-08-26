@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { CheckoutState, ItensClassification, Customer, Card } from "../types/checkout";
+import { CheckoutState, Customer, Card } from "../types/checkout";
 import { CheckoutService } from "../services/CheckoutService";
 import { Socket, Channel } from "phoenix";
+import { validateCheckout } from "./validation";
 
 interface CheckoutContextProps {
   state: CheckoutState;
@@ -29,31 +30,31 @@ const pureState = () => ({
     success: false,
     loading: false,
     error: undefined,
+    isValid: false,
     booking: {
       id: undefined,
       items: {
         bags: 0,
       },
       customer: {
-        name: "Cody",
-        email: "fabricioms.dev@gmail.com",
+        name: undefined,
+        email: undefined,
       },
       storePoint: {
-        id: "1x",
-        name: "Cody's Cookie Store",
+        id: undefined,
+        name: undefined,
       },
       paymentOrder: {
         kind: "creditCard",
         card: {
-          number: "1234 5678 9012 3456",
-          cvv: "123",
-          expiration: "12/23",
+          number: undefined,
+          cvv: undefined,
+          expiration: undefined,
         },
       },
       totalValue: 0,
     },
-  } as CheckoutState)
-
+  } as CheckoutState);
 
 export const CheckoutProvider: React.FC = ({ children }) => {
   const [channel, setChannel] = useState<Channel | null>(null);
@@ -66,14 +67,13 @@ export const CheckoutProvider: React.FC = ({ children }) => {
 
   socket.connect();
 
-
   useEffect(() => {
     loadPossibleItemsToStore();
   }, []);
 
   useEffect(() => {
     if (state.possibleItemsToStore.length) addABag();
-  }, [state.possibleItemsToStore]);
+  }, [state.possibleItemsToStore, state.booking.id]);
 
   useEffect(() => {
     startCheckout();
@@ -89,6 +89,10 @@ export const CheckoutProvider: React.FC = ({ children }) => {
     calculateNewPrice(state);
   }, [state.booking.items.bags]);
 
+  useEffect(() => {
+    validateBooking();
+  }, [state.booking]);
+
   const loadPossibleItemsToStore = async () => {
     const data = await checkoutService.getPossibleItemsKindToStore();
 
@@ -97,7 +101,6 @@ export const CheckoutProvider: React.FC = ({ children }) => {
       possibleItemsToStore: data,
     }));
   };
-
 
   const calculateNewPrice = (state: CheckoutState) => {
     const storagePrice = getStoragePrice();
@@ -114,6 +117,15 @@ export const CheckoutProvider: React.FC = ({ children }) => {
     )?.valueToStore || 10;
 
     return bagStorePrice;
+  }
+
+  const validateBooking = async () => {
+    const validation = await validateCheckout(state);
+
+    setState((prevState) => ({
+      ...prevState,
+      isValid: validation?.isValid,
+    }));
   }
 
   const addABag = () => {
@@ -183,6 +195,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
       booking: {
         ...prevState.booking,
         id: data.id,
+        storePoint: state.storePoint,
       },
     }));
   }

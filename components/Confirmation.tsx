@@ -33,6 +33,7 @@ export const CheckoutConfirmation = ({ data }: { data?: CheckoutState }) => {
             onPress={finishCheckout}
             color='primary'
             testID="confirmation--book-button"
+            disabled={!state.isValid}
           >
             Book
           </Button>
