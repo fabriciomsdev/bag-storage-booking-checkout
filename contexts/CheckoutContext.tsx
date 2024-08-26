@@ -31,7 +31,7 @@ const getPureState = () => ({
     booking: {
       id: undefined,
       items: {
-        bags: 0,
+        bags: 1,
       },
       customer: {
         name: undefined,
@@ -70,7 +70,9 @@ export const CheckoutProvider: React.FC = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (state.possibleItemsToStore.length) addABag();
+    if (state.possibleItemsToStore.length && state.booking.id) {
+      calculateNewPrice(state);
+    }
   }, [state.possibleItemsToStore, state.booking.id]);
 
   useEffect(() => {
