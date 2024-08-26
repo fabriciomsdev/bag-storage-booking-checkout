@@ -19,15 +19,15 @@ export const BagCounter = ({ count, onIncrement, onDecrement }: BagCounterProps)
       <View style={{ width: 120 }}>
         <Grid.Row>
           <Button 
-            testID="decrement-button"
+            testID="bag-counter-decrement-button"
             onPress={onDecrement} 
             style={roundedButtonStyle}
           >
             -
           </Button>
-          <Text testID="bag-number">{count}</Text>
+          <Text testID="bag-counter-bag-quantity">{count}</Text>
           <Button 
-            testID="increment-button"
+            testID="bag-counter-increment-button"
             onPress={onIncrement} 
             style={roundedButtonStyle}
           >

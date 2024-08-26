@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
-import { CustomHeading } from "./CustomHeading";
+import { CustomHeading } from "../CustomHeading";
 import { Text } from "@rneui/themed";
 import { makeStyles } from "@rneui/themed";
-import { useCheckout } from "../contexts/CheckoutContext";
+import { useCheckout } from "../../contexts/CheckoutContext";
 
-export function OrderProcessingFeedback() {
+export function OrderProcessingErrorFeedback() {
   const { state } = useCheckout();
 
   if (state.error) return <CheckoutError error={state.error} />;

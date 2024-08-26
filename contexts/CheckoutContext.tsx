@@ -207,6 +207,7 @@ export const CheckoutProvider: React.FC = ({ children }) => {
       setState((prevState) => ({
         ...prevState,
         success: true,
+        loading: false,
       }));
     }
 

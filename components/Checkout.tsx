@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   makeStyles,
 } from "@rneui/themed";
@@ -9,14 +9,16 @@ import { CreditCardForm } from "./CreditCard";
 import { CheckoutConfirmation } from "./Confirmation";
 import { CheckoutHeader } from "./CheckoutHeader";
 import { useCheckout } from "../contexts/CheckoutContext";
-import { Loading } from "./Loading";
-import { OrderProcessingFeedback } from "./Error";
+import { Loading } from "./Feedbacks/Loading";
+import { OrderProcessingErrorFeedback } from "./Feedbacks/Error";
+import { OrderBookedFeedback } from "./Feedbacks/OrderBooked";
 
 export function Checkout() {
   const styles = useStyles();
   const { state } = useCheckout();
-  
+
   if (state.loading) return <Loading />;
+  if (state.success) return <OrderBookedFeedback />;
 
   return (
     <View style={styles.container}>
@@ -25,7 +27,7 @@ export function Checkout() {
       <CustomerInformationForm/>
       <CheckoutDivider/>
       <CreditCardForm/>
-      <OrderProcessingFeedback />
+      <OrderProcessingErrorFeedback />
       <CheckoutDivider/>
       <CheckoutConfirmation/>
     </View>
