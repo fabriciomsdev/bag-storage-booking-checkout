@@ -59,11 +59,10 @@ export const CheckoutProvider: React.FC = ({ children }) => {
   const [state, setState] = useState<CheckoutState>(getPureState());
 
   const checkoutService = new CheckoutService(AppConfig.apiUrl);
+  // TODO: 
   const socket = new Socket(AppConfig.webSocketUrl, {
     params: { token: "your_token" },
   });
-
-  socket.connect();
 
   useEffect(() => {
     loadPossibleItemsToStore();
@@ -234,10 +233,9 @@ export const CheckoutProvider: React.FC = ({ children }) => {
     }
   }
   
-  // TODO: use websockets
   const wachOrderUpdates = async (callback = processOrderUpdate) => {
     if (!state.booking.id) return;
-
+    socket.connect();
     const channelName = `order:${state.booking.id}`;
     const orderUpdatesChannel = socket.channel(channelName, {});
     setChannel(orderUpdatesChannel);
